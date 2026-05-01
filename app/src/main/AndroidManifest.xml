@@ -44,11 +44,9 @@
         <activity
             android:name=".presentation.common.base.GameplayActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"/>
-        <!--ENCB Activity -->
         <activity
             android:name=".presentation.locations.buildings.encb.ENCB"
             android:configChanges="orientation|screenSize|keyboardHidden"/>
-        <!-- Building2 Activity -->
         <activity
             android:name=".presentation.locations.buildings.cidetec.Cidetec"
             android:exported="false"/>
@@ -150,12 +148,10 @@
             android:name=".presentation.locations.outdoor.RedMetro"
             android:theme="@style/Theme.Sensores_ESCOM_V2" />
 
-        <!-- Actividad principal de ESIA (Exteriores) -->
         <activity
             android:name=".presentation.locations.outdoor.ESIA"
             android:configChanges="orientation|screenSize|keyboardHidden"/>
 
-        <!-- NUEVAS ACTIVIDADES DE ESIA (Edificios e Interiores) -->
         <activity
             android:name=".presentation.locations.buildings.esia.BibliotecaESIA"
             android:configChanges="orientation|screenSize|keyboardHidden"/>
@@ -166,6 +162,10 @@
 
         <activity
             android:name=".presentation.locations.buildings.esia.SalonESIA"
+            android:configChanges="orientation|screenSize|keyboardHidden"/>
+
+        <activity
+            android:name=".presentation.locations.buildings.esia.EdificioNuevoESIA"
             android:configChanges="orientation|screenSize|keyboardHidden"/>
 
         <activity

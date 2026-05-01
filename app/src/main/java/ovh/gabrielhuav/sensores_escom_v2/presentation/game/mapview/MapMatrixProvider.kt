@@ -97,16 +97,16 @@ class MapMatrixProvider {
         const val MAP_PLAZA_VISTA_NORTE = "plazaVistaNorte"
         const val MAP_LABRV = "labrv"
 
-        // Constantes de ESIA
+        // === CONSTANTES DEL MÓDULO ESIA ===
         const val MAP_BIBLIOTECA_ESIA = "biblioteca_esia"
         const val MAP_EDIFICIO_ESIA = "edificio_esia"
-        const val MAP_SALON_ESIA="salon_esia"
+        const val MAP_SALON_ESIA = "salon_esia"
+        const val MAP_EDIFICIO_NUEVO_ESIA = "edificio_nuevo_esia"
 
         fun normalizeMapName(mapName: String?): String {
             if (mapName.isNullOrBlank()) return MAP_MAIN
 
             val lowerMap = mapName.lowercase()
-
 
             return when {
                 // Mapa principal
@@ -120,21 +120,18 @@ class MapMatrixProvider {
                 lowerMap.contains("building2") || lowerMap.contains("edificio2") -> MAP_BUILDING2
 
                 // Salones Edificio 2
-                //Planta Baja
                 lowerMap.contains("escom_salon2001") || lowerMap.contains("salon2001") -> MAP_SALON2001
                 lowerMap.contains("escom_salon2002") || lowerMap.contains("salon2002") -> MAP_SALON2002
                 lowerMap.contains("escom_salon2003") || lowerMap.contains("salon2003") -> MAP_SALON2003
                 lowerMap.contains("escom_salon2004") || lowerMap.contains("salon2004") -> MAP_SALON2004
                 lowerMap.contains("escom_salon2005") || lowerMap.contains("salon2005") -> MAP_SALON2005
                 lowerMap.contains("escom_salon2006") || lowerMap.contains("salon2006") -> MAP_SALON2006
-                //Primer Piso
                 lowerMap.contains("escom_salon2101") || lowerMap.contains("salon2101") -> MAP_SALON2101
                 lowerMap.contains("escom_salon2102") || lowerMap.contains("salon2102") -> MAP_SALON2102
                 lowerMap.contains("escom_salon2103") || lowerMap.contains("salon2103") -> MAP_SALON2103
                 lowerMap.contains("escom_salon2104") || lowerMap.contains("salon2104") -> MAP_SALON2104
                 lowerMap.contains("escom_salon2105") || lowerMap.contains("salon2105") -> MAP_SALON2105
                 lowerMap.contains("escom_salon2106") || lowerMap.contains("salon2106") -> MAP_SALON2106
-                //Segundo Piso
                 lowerMap.contains("escom_salon2201") || lowerMap.contains("salon2201") -> MAP_SALON2201
                 lowerMap.contains("escom_salon2202") || lowerMap.contains("salon2202") -> MAP_SALON2202
                 lowerMap.contains("escom_salon2203") || lowerMap.contains("salon2203") -> MAP_SALON2203
@@ -143,13 +140,10 @@ class MapMatrixProvider {
                 lowerMap.contains("escom_salon2206") || lowerMap.contains("salon2206") -> MAP_SALON2206
                 lowerMap.contains("2009") || lowerMap.contains("salon2009") -> MAP_SALON2009
                 lowerMap.contains("2010") || lowerMap.contains("salon2010") -> MAP_SALON2010
-
-
                 lowerMap.contains("1212") || lowerMap.contains("salon1212") -> MAP_SALON1212
 
                 // Cafetería
                 lowerMap.contains("cafe") || lowerMap.contains("cafeteria") -> MAP_CAFETERIA
-
                 lowerMap.contains("estacionamiento") -> MAP_ESTACIONAMIENTO
                 lowerMap.contains("plaza") || lowerMap.contains("atras") -> MAP_TRAS_PLAZA
 
@@ -176,87 +170,37 @@ class MapMatrixProvider {
                 //ESIME
                 lowerMap.contains("esime") || lowerMap.contains("esime_zacatenco") -> MAP_ESIME
 
-                // ESIA
+                // === NUEVO MÓDULO ESIA ===
+                lowerMap.contains("biblioteca_esia") || (lowerMap.contains("biblioteca") && lowerMap.contains("esia")) -> MAP_BIBLIOTECA_ESIA
+                lowerMap.contains("edificio_nuevo_esia") || lowerMap.contains("edificio_nuevo") -> MAP_EDIFICIO_NUEVO_ESIA
+                lowerMap.contains("edificio_esia") || (lowerMap.contains("edificio") && lowerMap.contains("esia")) -> MAP_EDIFICIO_ESIA
+                lowerMap.contains("salon_esia") || (lowerMap.contains("salon") && lowerMap.contains("esia")) -> MAP_SALON_ESIA
                 lowerMap.contains("esia") && !lowerMap.contains("biblioteca") && !lowerMap.contains("edificio") && !lowerMap.contains("salon") -> MAP_ESIA
+
                 lowerMap.contains("encb") -> MAP_ENCB
                 lowerMap.contains("plaza_torres") -> MAP_PLAZA_TORRES
                 lowerMap.contains("plaza_torres_n1") -> MAP_PLAZA_TORRES_N1
-
-                lowerMap.contains("biblioteca_esia") || (lowerMap.contains("biblioteca") && lowerMap.contains("esia")) -> MAP_BIBLIOTECA_ESIA
-                lowerMap.contains("edificio_esia") || (lowerMap.contains("edificio") && lowerMap.contains("esia")) -> MAP_EDIFICIO_ESIA
-                lowerMap.contains("salon_esia") || (lowerMap.contains("salon") && lowerMap.contains("esia")) -> MAP_SALON_ESIA
 
                 // Si no coincide con ninguno de los anteriores, devolver el original
                 else -> mapName
             }
         }
+
         // Puntos de transición entre mapas existentes
         val MAIN_TO_BUILDING2_POSITION = Pair(15, 10)
         val BUILDING2_TO_MAIN_POSITION = Pair(5, 5)
 
-        //Edificio 2 to Salon
-        //Planta Baja
-        val BUILDING2_TO_SALON2001_POSITION = Pair(4, 22)
-        val BUILDING2_TO_SALON2002_POSITION = Pair(9, 22)
-        val BUILDING2_TO_SALON2003_POSITION = Pair(13, 22)
-        val BUILDING2_TO_SALON2004_POSITION = Pair(21, 22)
-        val BUILDING2_TO_SALON2005_POSITION = Pair(26, 22)
-        val BUILDING2_TO_SALON2006_POSITION = Pair(31, 22)
-        //Primer Piso
-        val BUILDING2P1_TO_SALON2101_POSITION = Pair(4, 22)
-        val BUILDING2P1_TO_SALON2102_POSITION = Pair(9, 22)
-        val BUILDING2P1_TO_SALON2103_POSITION = Pair(13, 22)
-        val BUILDING2P1_TO_SALON2104_POSITION = Pair(21, 22)
-        val BUILDING2P1_TO_SALON2105_POSITION = Pair(26, 22)
-        val BUILDING2P1_TO_SALON2106_POSITION = Pair(31, 22)
-        //Segundo Piso
-        val BUILDING2P2_TO_SALON2201_POSITION = Pair(4, 22)
-        val BUILDING2P2_TO_SALON2202_POSITION = Pair(9, 22)
-        val BUILDING2P2_TO_SALON2203_POSITION = Pair(13, 22)
-        val BUILDING2P2_TO_SALON2204_POSITION = Pair(21, 22)
-        val BUILDING2P2_TO_SALON2205_POSITION = Pair(26, 22)
-        val BUILDING2P2_TO_SALON2206_POSITION = Pair(31, 22)
-
-        //Salon to Edificio 2
-        //Planta Baja
-        val SALON2001_TO_BUILDING2_POSITION = Pair(1, 20)
-        val SALON2002_TO_BUILDING2_POSITION = Pair(1, 20)
-        val SALON2003_TO_BUILDING2_POSITION = Pair(1, 20)
-        val SALON2004_TO_BUILDING2_POSITION = Pair(1, 20)
-        val SALON2005_TO_BUILDING2_POSITION = Pair(1, 20)
-        val SALON2006_TO_BUILDING2_POSITION = Pair(1, 20)
-        //Primer Piso
-        val SALON2101_TO_BUILDING2P1_POSITION = Pair(1, 20)
-        val SALON2102_TO_BUILDING2P1_POSITION = Pair(1, 20)
-        val SALON2103_TO_BUILDING2P1_POSITION = Pair(1, 20)
-        val SALON2104_TO_BUILDING2P1_POSITION = Pair(1, 20)
-        val SALON2105_TO_BUILDING2P1_POSITION = Pair(1, 20)
-        val SALON2106_TO_BUILDING2P1_POSITION = Pair(1, 20)
-        //Segundo Piso
-        val SALON2201_TO_BUILDING2P2_POSITION = Pair(1, 20)
-        val SALON2202_TO_BUILDING2P2_POSITION = Pair(1, 20)
-        val SALON2203_TO_BUILDING2P2_POSITION = Pair(1, 20)
-        val SALON2204_TO_BUILDING2P2_POSITION = Pair(1, 20)
-        val SALON2205_TO_BUILDING2P2_POSITION = Pair(1, 20)
-        val SALON2206_TO_BUILDING2P2_POSITION = Pair(1, 20)
-
         // Puntos de transición para los nuevos mapas
-        // Del mapa principal al primer mapa (Estacionamiento)
         val MAIN_TO_CAFETERIA_POSITION = Pair(2, 2)
         val CAFETERIA_TO_MAIN_POSITION = Pair(1, 1)
         val MAIN_TO_ESTACIONAMIENTO_POSITION = Pair(25, 5)
         val ESTACIONAMIENTO_TO_MAIN_POSITION = Pair(20, 38)
-
-
-        val MAIN_TO_SALIDAMETRO_POSITION = Pair(2, 2)       // Desde mapa principal
-        val SALIDAMETRO_TO_MAIN_POSITION = Pair(1, 1)         // Vuelta al mapa principal
-        // Del Estacionamiento al segundo mapa (Tramo Atrás Plaza)
+        val MAIN_TO_SALIDAMETRO_POSITION = Pair(2, 2)
+        val SALIDAMETRO_TO_MAIN_POSITION = Pair(1, 1)
         val ESTACIONAMIENTO_TO_PLAZA_POSITION = Pair(35, 20)
         val PLAZA_TO_ESTACIONAMIENTO_POSITION = Pair(5, 20)
-        // edificios ia
         val MAIN_TO_EDIFICIO_IA_BAJO = Pair(31, 21)
         val EDIFICIO_IA_BAJO_TO_MAIN = Pair(5, 20)
-
         val EDIFICIO_IA_BAJO_TO_MEDIO = Pair(5, 20)
         val MAIN_TO_PALAPAS_IA = Pair(1, 1)
         val MAIN_TO_PALAPAS_ISC_POSITION = Pair(8, 29)
@@ -270,7 +214,6 @@ class MapMatrixProvider {
         val ESIME_TO_ZACATENCO_POSITION = Pair(5, 35)
         val ZACATENCO_TO_ESIME_POSITION = Pair(28, 24)
 
-        // NUEVOS PUNTOS DE TRANSICIÓN PARA ESIA
         val ZACATENCO_TO_ESIA_POSITION = Pair(25, 12)
         val ESIA_TO_ZACATENCO_POSITION = Pair(25, 35)
 
@@ -284,35 +227,26 @@ class MapMatrixProvider {
                 MAP_BUILDING2 -> createBuilding2Matrix()
                 MAP_BUILDING2_PISO1 -> createBuilding2Piso1Matrix()
                 MAP_BUILDING2_PISO2 -> createBuilding2Piso2Matrix()
-                // Salones Edificio 2
-                //Planta Baja
                 MAP_SALON2001, MAP_SALON2002, MAP_SALON2003, MAP_SALON2004, MAP_SALON2005, MAP_SALON2006 -> createSalonMatrix()
-                //Primer Piso
                 MAP_SALON2101, MAP_SALON2102, MAP_SALON2103, MAP_SALON2104, MAP_SALON2105, MAP_SALON2106 -> createSalonMatrix()
-                //Segundo Piso
                 MAP_SALON2201, MAP_SALON2202, MAP_SALON2203, MAP_SALON2204, MAP_SALON2205, MAP_SALON2206 -> createSalonMatrix()
 
-                //Edificio 4
                 MAP_BUILDING4 -> createBuilding4Matrix()
                 MAP_BUILDING4_PISO1 -> createBuilding4Piso1Matrix()
                 MAP_BUILDING4_PISO2 -> createBuilding4Piso2Matrix()
-                // Salones Edificio 4
-                //Planta Baja
                 MAP_SALON4001, MAP_SALON4002, MAP_SALON4003, MAP_SALON4004, MAP_SALON4005, MAP_SALON4006 -> createSalonMatrix()
-                //Primer Piso
                 MAP_SALON4101, MAP_SALON4102, MAP_SALON4103, MAP_SALON4104, MAP_SALON4105, MAP_SALON4106 -> createSalonMatrix()
-                //Segundo Piso
                 MAP_SALON4201, MAP_SALON4202, MAP_SALON4203, MAP_SALON4204, MAP_SALON4205, MAP_SALON4206 -> createSalonMatrix()
 
-                MAP_SALON2009 -> createSalon2009Matrix()  // Nueva matriz para el salón 2009
-                MAP_SALON2010 -> createSalon2010Matrix()  // Nueva matriz para el salón 2010
+                MAP_SALON2009 -> createSalon2009Matrix()
+                MAP_SALON2010 -> createSalon2010Matrix()
                 MAP_SALON1212 -> createSalon1212Matrix()
                 MAP_CAFETERIA -> createCafeESCOMMatrix()
                 MAP_ESTACIONAMIENTO -> createEstacionamientoMatrix()
                 MAP_TRAS_PLAZA -> createPlazaMatrix()
                 MAP_ZACATENCO -> createZacatencoMatrix()
                 MAP_LINDAVISTA -> createLindavistaMatrix()
-                MAP_SALIDAMETRO -> createSalidaMetroMatrix() // salida metro
+                MAP_SALIDAMETRO -> createSalidaMetroMatrix()
                 MAP_METRO_POLITECNICO -> createMetroPolitecnicoMatrix()
                 MAP_ANDENES_METRO_POLITECNICO -> createAndenesMetroPolitecnicoMatrix()
                 MAP_RED_METRO -> createRedMetroMatrix()
@@ -335,13 +269,128 @@ class MapMatrixProvider {
                 MAP_CIDETEC -> createCidetecMatrix()
                 MAP_LABRV -> createLabRVMatrix()
 
-                // Mapeo a las matrices de ESIA
+                // === MATRICES DEL MÓDULO ESIA ===
                 MAP_BIBLIOTECA_ESIA -> createBibliotecaESIAMatrix()
                 MAP_EDIFICIO_ESIA -> createEdificioESIAMatrix()
+                MAP_EDIFICIO_NUEVO_ESIA -> createNuevoDiseñoMatrix()
                 MAP_SALON_ESIA -> createSalonESIAMatrix()
 
-                else -> createDefaultMatrix() // Por defecto, un mapa básico
+                else -> createDefaultMatrix()
             }
+        }
+
+
+        // ==============================================================
+        // === MATRICES CORREGIDAS PARA EL MÓDULO ESIA ===
+        // ==============================================================
+
+        private fun createBibliotecaESIAMatrix(): Array<Array<Int>> {
+            val matrix = Array(40) { Array(40) { 2 } }
+            for (j in 0..39) { matrix[0][j] = 1 }
+            for (j in 0..39) { matrix[39][j] = 1 }
+            for (i in 1..38) { matrix[i][0] = 1 }
+            for (i in 1..38) { matrix[i][39] = 1 }
+            for (i in 3..5) { for (j in 3 until 11) { matrix[i][j] = WALL } }
+            for (i in 9..11) { for (j in 3 until 11) { matrix[i][j] = WALL } }
+            for (i in 17.. 19) { for (j in 3 until 11) { matrix[i][j] = WALL } }
+            for (i in 25 .. 26) { for (j in 3 until 11) { matrix[i][j] = WALL } }
+            for (i in 32.. 34) { for (j in 3 until 11) { matrix[i][j] = WALL } }
+            for (i in 27..34) { for (j in 18 ..19) { matrix[i][j] = WALL } }
+            for (i in 15.. 22) { for (j in 16 until 21) { matrix[i][j] = WALL } }
+            for (i in 4..11) { for (j in 17 ..19) { matrix[i][j] = WALL } }
+            for (i in 3..5) { for (j in 27 ..34) { matrix[i][j] = WALL } }
+            for (i in 32..34) { for (j in 26 ..33) { matrix[i][j] = WALL } }
+            for (j in 26..27){ matrix[28][j] = WALL }
+            for (j in 33..34){ matrix[28][j] = WALL }
+            for (j in 25..26){ matrix[24][j] = WALL }
+            for (j in 32..33){ matrix[24][j] = WALL }
+            for (j in 33..34){ matrix[13][j] = WALL }
+            for (j in 26..27){ matrix[13][j] = WALL }
+            for (j in 26..27){ matrix[9][j] = WALL }
+            for (j in 33..34){ matrix[9][j] = WALL }
+            // Punto de entrada/salida
+            matrix[19][38] = 0  // INTERACTIVE
+            return matrix
+        }
+
+        private fun createEdificioESIAMatrix(): Array<Array<Int>> {
+            val matrix = Array(MAP_HEIGHT) { Array(MAP_WIDTH) { PATH } }
+            // Borde de seguridad
+            for (i in 0..39) {
+                matrix[0][i] = WALL; matrix[39][i] = WALL
+                matrix[i][0] = WALL; matrix[i][39] = WALL
+            }
+            // Pared superior e inferior del pasillo
+            for (x in 1..38) { matrix[15][x] = WALL; matrix[36][x] = WALL }
+            // Paredes laterales
+            for (y in 15..36) { matrix[y][1] = WALL; matrix[y][38] = WALL }
+            // Pared horizontal que separa el pasillo de los salones
+            for (x in 1..38) { matrix[28][x] = WALL }
+            // Paredes verticales de los 8 salones
+            val paredesX = intArrayOf(6, 11, 16, 21, 26, 31, 35)
+            for (paredX in paredesX) {
+                for (y in 15..28) { matrix[y][paredX] = WALL }
+            }
+            // ABRIR LAS PUERTAS
+            val puertasX = intArrayOf(4, 9, 14, 18, 23, 28, 33, 37)
+            for (puerta in puertasX) { matrix[28][puerta] = INTERACTIVE }
+            // SALIDA PRINCIPAL
+            matrix[36][20] = INTERACTIVE
+            return matrix
+        }
+
+        private fun createNuevoDiseñoMatrix(): Array<Array<Int>> {
+            val matrix = Array(MAP_HEIGHT) { Array(MAP_WIDTH) { PATH } }
+            // Paredes exteriores de la planta
+            for (i in 0..39) {
+                matrix[14][i] = WALL // Techo
+                matrix[37][i] = WALL // Piso
+                matrix[i][1] = WALL  // Izquierda
+                matrix[i][38] = WALL // Derecha
+            }
+            // Pared del pasillo (donde están las puertas)
+            for (i in 1..38) { matrix[28][i] = WALL }
+
+            // --- BLOQUE IZQUIERDO (3 salones) ---
+            val paredesIzquierdas = intArrayOf(6, 11, 16)
+            for (x in paredesIzquierdas) {
+                for (y in 14..28) { matrix[y][x] = WALL }
+            }
+            // Puertas salones 1, 2, 3
+            val puertasIzq = intArrayOf(4, 9, 14)
+            for (x in puertasIzq) { matrix[28][x] = INTERACTIVE }
+
+            // --- BLOQUE CENTRAL (Escaleras y Baños) ---
+            for (y in 14..28) {
+                matrix[y][16] = WALL
+                matrix[y][24] = WALL
+            }
+            matrix[28][20] = INTERACTIVE // Puerta del Baño
+
+            // --- BLOQUE DERECHO (3 salones) ---
+            val paredesDerechas = intArrayOf(24, 29, 34)
+            for (x in paredesDerechas) {
+                for (y in 14..28) { matrix[y][x] = WALL }
+            }
+            // Puertas salones 4, 5, 6
+            val puertasDer = intArrayOf(26, 31, 36)
+            for (x in puertasDer) { matrix[28][x] = INTERACTIVE }
+
+            // Salida principal hacia ESIA exterior
+            matrix[37][20] = INTERACTIVE
+            return matrix
+        }
+
+        private fun createSalonESIAMatrix(): Array<Array<Int>> {
+            val matrix = Array(MAP_HEIGHT) { Array(MAP_WIDTH) { PATH } }
+            // Paredes alrededor de todo el salón
+            for (i in 0..39) {
+                matrix[0][i] = WALL; matrix[39][i] = WALL
+                matrix[i][0] = WALL; matrix[i][39] = WALL
+            }
+            // Puerta
+            matrix[8][0] = INTERACTIVE
+            return matrix
         }
 
 
@@ -3341,121 +3390,12 @@ class MapMatrixProvider {
 
             // Puntos interactivos
             matrix[35][25] = INTERACTIVE // Salida a Zacatenco
-            matrix[31][6] = INTERACTIVE  // Entrada a biblioteca
-            matrix[28][19] = INTERACTIVE  // Entrada a edificio
+            matrix[31][6] = INTERACTIVE  // Entrada a biblioteca (matriz y=31, x=6)
+            matrix[28][19] = INTERACTIVE  // Entrada a edificio original (matriz y=28, x=19)
+            matrix[28][14] = INTERACTIVE  // Entrada a EDIFICIO NUEVO (matriz y=28, x=14)
 
             return matrix
         }
-
-        // ==============================================================
-        // === MATRICES CORREGIDAS PARA ESIA ===
-        // ==============================================================
-
-        private fun createBibliotecaESIAMatrix(): Array<Array<Int>> {
-            // Crear matriz de 40x40 con TODO como PATH (valor 2)
-            val matrix = Array(40) { Array(40) { 2 } }
-
-            // ✅ NO BLOQUEAR NADA - Solo bordes mínimos
-            for (j in 0..39) { matrix[0][j] = 1 }
-            for (j in 0..39) { matrix[39][j] = 1 }
-            for (i in 1..38) { matrix[i][0] = 1 }
-            for (i in 1..38) { matrix[i][39] = 1 }
-
-            for (i in 3..5) { for (j in 3 until 11) { matrix[i][j] = WALL } }
-            for (i in 9..11) { for (j in 3 until 11) { matrix[i][j] = WALL } }
-            for (i in 17.. 19) { for (j in 3 until 11) { matrix[i][j] = WALL } }
-            for (i in 25 .. 26) { for (j in 3 until 11) { matrix[i][j] = WALL } }
-            for (i in 32.. 34) { for (j in 3 until 11) { matrix[i][j] = WALL } }
-            for (i in 27..34) { for (j in 18 ..19) { matrix[i][j] = WALL } }
-            for (i in 15.. 22) { for (j in 16 until 21) { matrix[i][j] = WALL } }
-            for (i in 4..11) { for (j in 17 ..19) { matrix[i][j] = WALL } }
-            for (i in 3..5) { for (j in 27 ..34) { matrix[i][j] = WALL } }
-            for (i in 32..34) { for (j in 26 ..33) { matrix[i][j] = WALL } }
-
-            for (j in 26..27){ matrix[28][j] = WALL }
-            for (j in 33..34){ matrix[28][j] = WALL }
-            for (j in 25..26){ matrix[24][j] = WALL }
-            for (j in 32..33){ matrix[24][j] = WALL }
-            for (j in 33..34){ matrix[13][j] = WALL }
-            for (j in 26..27){ matrix[13][j] = WALL }
-            for (j in 26..27){ matrix[9][j] = WALL }
-            for (j in 33..34){ matrix[9][j] = WALL }
-
-            // Punto de entrada/salida
-            matrix[19][38] = 0  // INTERACTIVE
-
-            return matrix
-        }
-
-        private fun createEdificioESIAMatrix(): Array<Array<Int>> {
-            val matrix = Array(MAP_HEIGHT) { Array(MAP_WIDTH) { PATH } }
-
-            // 0. Borde de seguridad invisible en las orillas de la pantalla
-            for (i in 0..39) {
-                matrix[0][i] = WALL
-                matrix[39][i] = WALL
-                matrix[i][0] = WALL
-                matrix[i][39] = WALL
-            }
-
-            // 1. Pared superior de los salones (Y = 15)
-            // 2. Pared inferior del pasillo (Y = 36 para que tu posición inicial 20,34 quede libre)
-            for (x in 1..38) {
-                matrix[15][x] = WALL
-                matrix[36][x] = WALL
-            }
-
-            // 3. Paredes laterales de todo el bloque del edificio (X = 1 y X = 38)
-            for (y in 15..36) {
-                matrix[y][1] = WALL
-                matrix[y][38] = WALL
-            }
-
-            // 4. Pared horizontal que separa el pasillo de los salones (Y = 28)
-            for (x in 1..38) {
-                matrix[28][x] = WALL
-            }
-
-            // 5. Paredes verticales que separan los 8 salones (de Y = 15 a Y = 28)
-            // Se colocan en medio de las puertas para formar los cuartos
-            val paredesX = intArrayOf(6, 11, 16, 21, 26, 31, 35)
-            for (paredX in paredesX) {
-                for (y in 15..28) {
-                    matrix[y][paredX] = WALL
-                }
-            }
-
-            // 6. ABRIR LAS PUERTAS HACIA LOS SALONES (INTERACTIVE = 0)
-            // Usamos las coordenadas exactas que pusiste en EdificioESIA.kt
-            val puertasX = intArrayOf(4, 9, 14, 18, 23, 28, 33, 37)
-            for (puerta in puertasX) {
-                matrix[28][puerta] = INTERACTIVE
-            }
-
-            // 7. ABRIR LA SALIDA PRINCIPAL DEL EDIFICIO
-            // Tu jugador aparece en (20, 34), abrimos el muro de abajo para que pueda salir a ESIA
-            matrix[36][20] = INTERACTIVE
-
-            return matrix
-        }
-
-        private fun createSalonESIAMatrix(): Array<Array<Int>> {
-            val matrix = Array(MAP_HEIGHT) { Array(MAP_WIDTH) { PATH } }
-
-            // Paredes alrededor de todo el salón
-            for (i in 0..39) {
-                matrix[0][i] = WALL
-                matrix[39][i] = WALL
-                matrix[i][0] = WALL
-                matrix[i][39] = WALL
-            }
-            // Dejar la puerta abierta según SalonESIA.kt (X=0, Y=8)
-            matrix[8][0] = INTERACTIVE
-
-            return matrix
-        }
-
-
 
         /**
          * Comprueba si la coordenada especificada es un punto de transición entre mapas
@@ -3824,21 +3764,38 @@ class MapMatrixProvider {
                 return MAP_PLAZA_TORRES
             }
 
-            if (mapId == MAP_ESIA && x == 10 && y == 15) { // Ajusta las coordenadas según tu mapa
+            // ==============================================================
+            // === TRANSICIONES DESDE Y HACIA EL MÓDULO ESIA ===
+            // ==============================================================
+
+            // De Exterior a Biblioteca
+            if (mapId == MAP_ESIA && x == 6 && y == 31) {
                 return MAP_BIBLIOTECA_ESIA
             }
-
-            // Transición DESDE Biblioteca ESIA hacia ESIA
-            if (mapId == MAP_BIBLIOTECA_ESIA && x == 15 && y == 25) {
+            // De Biblioteca a Exterior
+            if (mapId == MAP_BIBLIOTECA_ESIA && x == 38 && y == 19) {
                 return MAP_ESIA
             }
 
-            // Transición DESDE Edificio ESIA hacia ESIA
+            // De Exterior a Edificio Original (8 salones)
+            if (mapId == MAP_ESIA && x == 19 && y == 28) {
+                return MAP_EDIFICIO_ESIA
+            }
+            // De Edificio Original a Exterior
             if (mapId == MAP_EDIFICIO_ESIA && x == 20 && y == 36) {
                 return MAP_ESIA
             }
 
-            // Transición DESDE Salon ESIA hacia Edificio ESIA
+            // De Exterior a NUEVO Edificio (6 salones + escaleras)
+            if (mapId == MAP_ESIA && x == 14 && y == 28) {
+                return MAP_EDIFICIO_NUEVO_ESIA
+            }
+            // De NUEVO Edificio a Exterior
+            if (mapId == MAP_EDIFICIO_NUEVO_ESIA && x == 20 && y == 37) {
+                return MAP_ESIA
+            }
+
+            // Transición DESDE Salon ESIA hacia Edificio ESIA original
             if (mapId == MAP_SALON_ESIA && x == 0 && y == 8) {
                 return MAP_EDIFICIO_ESIA
             }
@@ -3918,6 +3875,7 @@ class MapMatrixProvider {
                 // === NUEVAS POSICIONES INICIALES ESIA ===
                 MAP_BIBLIOTECA_ESIA -> Pair(38, 19)
                 MAP_EDIFICIO_ESIA -> Pair(20, 34)
+                MAP_EDIFICIO_NUEVO_ESIA -> Pair(20, 35)
                 MAP_SALON_ESIA -> Pair(20, 20)
 
                 MAP_CIDETEC -> Pair(3,18) // Posición inicial en CIDETEC

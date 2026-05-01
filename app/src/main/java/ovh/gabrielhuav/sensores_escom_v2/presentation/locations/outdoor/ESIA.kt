@@ -31,6 +31,7 @@ import ovh.gabrielhuav.sensores_escom_v2.presentation.game.mapview.MapMatrixProv
 import ovh.gabrielhuav.sensores_escom_v2.presentation.game.mapview.MapView
 import ovh.gabrielhuav.sensores_escom_v2.presentation.locations.buildings.esia.BibliotecaESIA
 import ovh.gabrielhuav.sensores_escom_v2.presentation.locations.buildings.esia.EdificioESIA
+import ovh.gabrielhuav.sensores_escom_v2.presentation.locations.buildings.esia.EdificioNuevoESIA // <-- IMPORT AGREGADO
 
 class ESIA : AppCompatActivity(),
     BluetoothManager.BluetoothManagerCallback,
@@ -363,6 +364,14 @@ class ESIA : AppCompatActivity(),
                     Toast.makeText(this, "Presiona A para entrar al Edificio ESIA", Toast.LENGTH_SHORT).show()
                 }
             }
+            // ---> NUEVA ENTRADA AL EDIFICIO NUEVO <---
+            position.first == 14 && position.second == 28 -> {
+                canChangeMap = true
+                targetDestination = "edificio_nuevo_esia"
+                runOnUiThread {
+                    Toast.makeText(this, "Presiona A para entrar al Edificio Nuevo", Toast.LENGTH_SHORT).show()
+                }
+            }
             else -> {
                 canChangeMap = false
                 targetDestination = null
@@ -403,6 +412,23 @@ class ESIA : AppCompatActivity(),
                         "edificio_esia" -> {
                             Log.d(TAG, "ESIA: buttonA click - Entrando a edificio_esia")
                             enterEdificioESIA()
+                        }
+                        // ---> TRANSICIÓN AL EDIFICIO NUEVO <---
+                        "edificio_nuevo_esia" -> {
+                            Log.d(TAG, "ESIA: buttonA click - Entrando a edificio_nuevo_esia")
+                            val intent = Intent(this@ESIA, EdificioNuevoESIA::class.java).apply {
+                                putExtra("PLAYER_NAME", playerName)
+                                putExtra("IS_SERVER", gameState.isServer)
+                                putExtra("INITIAL_POSITION", Pair(20, 35))
+                                putExtra("RETURN_X", gameState.playerPosition.first)
+                                putExtra("RETURN_Y", gameState.playerPosition.second)
+                                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            }
+                            if (::mapView.isInitialized) {
+                                mapView.playerManager.cleanup()
+                            }
+                            startActivity(intent)
+                            finish()
                         }
                         else -> showToast("No hay interacción disponible en esta posición")
                     }
