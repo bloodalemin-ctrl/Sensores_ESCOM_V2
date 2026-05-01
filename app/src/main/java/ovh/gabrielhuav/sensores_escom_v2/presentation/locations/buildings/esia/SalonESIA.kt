@@ -222,9 +222,13 @@ class SalonESIA : AppCompatActivity(),
     }
 
     private fun returnToEdificio() {
-        Log.d(TAG, "Regresando al EdificioESIA")
+        Log.d(TAG, "Regresando al Edificio")
 
-        val intent = Intent(this, EdificioESIA::class.java).apply {
+        // Revisamos de qué edificio veníamos (esta variable la mandamos en el Paso 2)
+        val fromNuevoEdificio = intent.getBooleanExtra("FROM_NUEVO_EDIFICIO", false)
+        val targetClass = if (fromNuevoEdificio) EdificioNuevoESIA::class.java else EdificioESIA::class.java
+
+        val intent = Intent(this, targetClass).apply {
             putExtra("PLAYER_NAME", playerName)
             putExtra("IS_SERVER", gameState.isServer)
             putExtra("IS_CONNECTED", gameState.isConnected)

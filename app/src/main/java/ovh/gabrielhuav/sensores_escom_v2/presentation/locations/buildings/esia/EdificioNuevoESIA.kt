@@ -24,16 +24,14 @@ class EdificioNuevoESIA : AppCompatActivity(), MapView.MapTransitionListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_esia) // Reutilizamos el mismo layout de botones
+        setContentView(R.layout.activity_esia)
 
         playerName = intent.getStringExtra("PLAYER_NAME") ?: "Invitado"
         isServer = intent.getBooleanExtra("IS_SERVER", false)
 
-        // ✅ CORRECCIÓN 1: Especificar explícitamente "mapResourceId =" para evitar el error de AttributeSet
         mapView = MapView(context = this, mapResourceId = R.drawable.edificio_nuevo_esia)
         findViewById<FrameLayout>(R.id.map_container).addView(mapView)
 
-        // 2. Inicializamos interfaz y movimiento
         uiManager = UIManager(findViewById(R.id.main_layout), mapView)
         uiManager.initializeViews()
 
@@ -44,14 +42,16 @@ class EdificioNuevoESIA : AppCompatActivity(), MapView.MapTransitionListener {
         mapView.setMapTransitionListener(this)
         setupButtonListeners()
 
-        // 3. Configuramos el mapa y la posición inicial
         mapView.post {
             val mapKey = MapMatrixProvider.MAP_EDIFICIO_NUEVO_ESIA
             mapView.setCurrentMap(mapKey, R.drawable.edificio_nuevo_esia)
             mapView.playerManager.localPlayerId = playerName
 
-            // Apareces en el pasillo principal del nuevo edificio
-            val startPos = Pair(20, 35)
+            // Si venimos del salón, regresamos a la puerta. Si no, aparecemos en la entrada principal.
+            val returnX = intent.getIntExtra("SALON_RETURN_X", 20)
+            val returnY = intent.getIntExtra("SALON_RETURN_Y", 35)
+            val startPos = if (intent.getBooleanExtra("RETURN_FROM_SALON", false)) Pair(returnX, returnY) else Pair(20, 35)
+
             movementManager.setPosition(startPos)
             mapView.updateLocalPlayerPosition(startPos, forceCenter = true)
         }
@@ -64,38 +64,47 @@ class EdificioNuevoESIA : AppCompatActivity(), MapView.MapTransitionListener {
         uiManager.btnEast.setOnTouchListener { _, event -> movementManager.handleMovement(event, 1, 0); true }
         uiManager.btnWest.setOnTouchListener { _, event -> movementManager.handleMovement(event, -1, 0); true }
 
-        // Botón A para interactuar/salir
         uiManager.buttonA.setOnClickListener {
-            // ✅ CORRECCIÓN 2 y 3: Validar que la posición no sea nula antes de leer currentPos.first
             val currentPos = mapView.playerManager.getLocalPlayerPosition()
-
             if (currentPos != null) {
-                val transition = MapMatrixProvider.isMapTransitionPoint(
-                    MapMatrixProvider.MAP_EDIFICIO_NUEVO_ESIA,
-                    currentPos.first,
-                    currentPos.second
-                )
+                val transition = MapMatrixProvider.isMapTransitionPoint(MapMatrixProvider.MAP_EDIFICIO_NUEVO_ESIA, currentPos.first, currentPos.second)
                 if (transition != null) {
                     onMapTransitionRequested(transition, currentPos)
                 } else {
                     Toast.makeText(this, "Acércate a una puerta para salir", Toast.LENGTH_SHORT).show()
                 }
-            } else {
-                Log.e("EdificioNuevo", "No se pudo obtener la posición del jugador")
             }
         }
     }
 
     override fun onMapTransitionRequested(targetMap: String, initialPosition: Pair<Int, Int>) {
-        if (targetMap == MapMatrixProvider.MAP_ESIA) {
-            val intent = Intent(this, ESIA::class.java).apply {
-                putExtra("PLAYER_NAME", playerName)
-                putExtra("IS_SERVER", isServer)
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        when (targetMap) {
+            MapMatrixProvider.MAP_ESIA -> {
+                val intent = Intent(this, ESIA::class.java).apply {
+                    putExtra("PLAYER_NAME", playerName)
+                    putExtra("IS_SERVER", isServer)
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                }
+                mapView.playerManager.cleanup()
+                startActivity(intent)
+                finish()
             }
-            mapView.playerManager.cleanup()
-            startActivity(intent)
-            finish()
+            // ✅ AQUÍ JALAMOS LA ACTIVITY DEL SALÓN
+            MapMatrixProvider.MAP_SALON_ESIA -> {
+                val intent = Intent(this, SalonESIA::class.java).apply {
+                    putExtra("PLAYER_NAME", playerName)
+                    putExtra("IS_SERVER", isServer)
+                    putExtra("INITIAL_POSITION", Pair(20, 20)) // Entramos al medio del salón
+                    // Guardamos la puerta en la que estábamos para regresar ahí
+                    putExtra("RETURN_X", initialPosition.first)
+                    putExtra("RETURN_Y", initialPosition.second + 1) // +1 para no re-chocar con la puerta al volver
+                    putExtra("FROM_NUEVO_EDIFICIO", true) // Le decimos que venimos de aquí
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                }
+                mapView.playerManager.cleanup()
+                startActivity(intent)
+                finish()
+            }
         }
     }
 

@@ -341,43 +341,44 @@ class MapMatrixProvider {
 
         private fun createNuevoDiseñoMatrix(): Array<Array<Int>> {
             val matrix = Array(MAP_HEIGHT) { Array(MAP_WIDTH) { PATH } }
-            // Paredes exteriores de la planta
+
+            // 1. Paredes exteriores (MÁS ALTAS: Techo en Y=6 en lugar de 14)
             for (i in 0..39) {
-                matrix[14][i] = WALL // Techo
+                matrix[6][i] = WALL  // Techo muy alto
                 matrix[37][i] = WALL // Piso
                 matrix[i][1] = WALL  // Izquierda
                 matrix[i][38] = WALL // Derecha
             }
-            // Pared del pasillo (donde están las puertas)
+
+            // 2. Pared del pasillo (Se queda en Y=28)
             for (i in 1..38) { matrix[28][i] = WALL }
 
-            // --- BLOQUE IZQUIERDO (3 salones) ---
+            // 3. --- BLOQUE IZQUIERDO (3 salones) ---
             val paredesIzquierdas = intArrayOf(6, 11, 16)
             for (x in paredesIzquierdas) {
-                for (y in 14..28) { matrix[y][x] = WALL }
+                for (y in 6..28) { matrix[y][x] = WALL } // Muros crecen hasta arriba
             }
-            // Puertas salones 1, 2, 3
             val puertasIzq = intArrayOf(4, 9, 14)
-            for (x in puertasIzq) { matrix[28][x] = INTERACTIVE }
+            for (x in puertasIzq) { matrix[28][x] = INTERACTIVE } // Puertas
 
-            // --- BLOQUE CENTRAL (Escaleras y Baños) ---
-            for (y in 14..28) {
+            // 4. --- BLOQUE CENTRAL (Escaleras y Baños) ---
+            for (y in 6..28) {
                 matrix[y][16] = WALL
                 matrix[y][24] = WALL
             }
             matrix[28][20] = INTERACTIVE // Puerta del Baño
 
-            // --- BLOQUE DERECHO (3 salones) ---
+            // 5. --- BLOQUE DERECHO (3 salones) ---
             val paredesDerechas = intArrayOf(24, 29, 34)
             for (x in paredesDerechas) {
-                for (y in 14..28) { matrix[y][x] = WALL }
+                for (y in 6..28) { matrix[y][x] = WALL } // Muros crecen hasta arriba
             }
-            // Puertas salones 4, 5, 6
             val puertasDer = intArrayOf(26, 31, 36)
-            for (x in puertasDer) { matrix[28][x] = INTERACTIVE }
+            for (x in puertasDer) { matrix[28][x] = INTERACTIVE } // Puertas
 
-            // Salida principal hacia ESIA exterior
+            // 6. Salida principal hacia ESIA exterior
             matrix[37][20] = INTERACTIVE
+
             return matrix
         }
 
@@ -3403,6 +3404,22 @@ class MapMatrixProvider {
         fun isMapTransitionPoint(mapId: String, x: Int, y: Int): String? {
             // Imprimimos para depuración
             Log.d("MapTransition", "Checking transition at $mapId: ($x, $y)")
+            // De Exterior a NUEVO Edificio
+            if (mapId == MAP_ESIA && x == 14 && y == 28) {
+                return MAP_EDIFICIO_NUEVO_ESIA
+            }
+            // De NUEVO Edificio a Exterior
+            if (mapId == MAP_EDIFICIO_NUEVO_ESIA && x == 20 && y == 37) {
+                return MAP_ESIA
+            }
+
+            // ---> AGREGA ESTO: De NUEVO Edificio a los Salones <---
+            if (mapId == MAP_EDIFICIO_NUEVO_ESIA && y == 28) {
+                if (x == 4 || x == 9 || x == 14 || x == 26 || x == 31 || x == 36) {
+                    return MAP_SALON_ESIA
+                }
+            }
+            // ------------------------------------------------------
 
             // --- PLANTA BAJA (Corregido) ---
             if (mapId == MAP_BUILDING2) {
