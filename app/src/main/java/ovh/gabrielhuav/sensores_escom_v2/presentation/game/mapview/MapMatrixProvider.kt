@@ -384,13 +384,46 @@ class MapMatrixProvider {
 
         private fun createSalonESIAMatrix(): Array<Array<Int>> {
             val matrix = Array(MAP_HEIGHT) { Array(MAP_WIDTH) { PATH } }
-            // Paredes alrededor de todo el salón
+
+            // 1. Paredes exteriores
             for (i in 0..39) {
-                matrix[0][i] = WALL; matrix[39][i] = WALL
-                matrix[i][0] = WALL; matrix[i][39] = WALL
+                matrix[0][i] = WALL
+                matrix[39][i] = WALL
+                matrix[i][0] = WALL
+                matrix[i][39] = WALL
             }
-            // Puerta
+            // 2. Puerta de salida
             matrix[8][0] = INTERACTIVE
+
+            // 3. Pizarrón y Pantalla (al frente del salón)
+            for (x in 10..30) {
+                matrix[2][x] = INACCESSIBLE // Pizarrón pegado a la pared superior
+            }
+            // Le ponemos un punto interactivo al centro del pizarrón por si después quieren que al tocarlo salga un Toast que diga "Clase de Redes"
+            matrix[2][20] = INTERACTIVE
+
+
+            for (y in 5..7) {
+                for (x in 16..24) {
+                    matrix[y][x] = INACCESSIBLE
+                }
+            }
+
+            // 5. Butacas de los estudiantes
+
+            val filasY = intArrayOf(14, 19, 24, 29, 34) // Posiciones en Y (hacia abajo)
+            val columnasX = intArrayOf(6, 12, 18, 24, 30) // Posiciones en X (de izquierda a derecha)
+
+            for (y in filasY) {
+                for (x in columnasX) {
+                    // Cada butaca será un cuadrito de 2x2 para que se sienta del tamaño correcto
+                    matrix[y][x] = INACCESSIBLE
+                    matrix[y][x+1] = INACCESSIBLE
+                    matrix[y+1][x] = INACCESSIBLE
+                    matrix[y+1][x+1] = INACCESSIBLE
+                }
+            }
+
             return matrix
         }
 

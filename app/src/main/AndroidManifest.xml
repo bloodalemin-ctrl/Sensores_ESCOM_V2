@@ -178,6 +178,8 @@
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:screenOrientation="sensorLandscape"
             android:exported="false" />
+
+
     </application>
 
 </manifest>
