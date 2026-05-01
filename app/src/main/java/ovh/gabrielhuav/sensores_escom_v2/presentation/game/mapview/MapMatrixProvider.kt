@@ -95,10 +95,12 @@ class MapMatrixProvider {
         const val MAP_ESIA = "escom_esia"
         const val MAP_CIDETEC = "escom_cidetec"
         const val MAP_PLAZA_VISTA_NORTE = "plazaVistaNorte"
+        const val MAP_LABRV = "labrv"
+
+        // Constantes de ESIA
         const val MAP_BIBLIOTECA_ESIA = "biblioteca_esia"
         const val MAP_EDIFICIO_ESIA = "edificio_esia"
         const val MAP_SALON_ESIA="salon_esia"
-        const val MAP_LABRV = "labrv"
 
         fun normalizeMapName(mapName: String?): String {
             if (mapName.isNullOrBlank()) return MAP_MAIN
@@ -141,7 +143,7 @@ class MapMatrixProvider {
                 lowerMap.contains("escom_salon2206") || lowerMap.contains("salon2206") -> MAP_SALON2206
                 lowerMap.contains("2009") || lowerMap.contains("salon2009") -> MAP_SALON2009
                 lowerMap.contains("2010") || lowerMap.contains("salon2010") -> MAP_SALON2010
-                
+
 
                 lowerMap.contains("1212") || lowerMap.contains("salon1212") -> MAP_SALON1212
 
@@ -174,14 +176,15 @@ class MapMatrixProvider {
                 //ESIME
                 lowerMap.contains("esime") || lowerMap.contains("esime_zacatenco") -> MAP_ESIME
 
-
                 // ESIA
-                lowerMap.contains("esia") -> MAP_ESIA
+                lowerMap.contains("esia") && !lowerMap.contains("biblioteca") && !lowerMap.contains("edificio") && !lowerMap.contains("salon") -> MAP_ESIA
                 lowerMap.contains("encb") -> MAP_ENCB
                 lowerMap.contains("plaza_torres") -> MAP_PLAZA_TORRES
                 lowerMap.contains("plaza_torres_n1") -> MAP_PLAZA_TORRES_N1
-                lowerMap.contains("biblioteca_esia") || lowerMap.contains("biblioteca") && lowerMap.contains("esia") -> MAP_BIBLIOTECA_ESIA
+
+                lowerMap.contains("biblioteca_esia") || (lowerMap.contains("biblioteca") && lowerMap.contains("esia")) -> MAP_BIBLIOTECA_ESIA
                 lowerMap.contains("edificio_esia") || (lowerMap.contains("edificio") && lowerMap.contains("esia")) -> MAP_EDIFICIO_ESIA
+                lowerMap.contains("salon_esia") || (lowerMap.contains("salon") && lowerMap.contains("esia")) -> MAP_SALON_ESIA
 
                 // Si no coincide con ninguno de los anteriores, devolver el original
                 else -> mapName
@@ -262,7 +265,7 @@ class MapMatrixProvider {
         val EDIFICIO_GOBIERNO_TO_MAIN = Pair(20, 2)
         val MAIN_TO_BIBLIOTECA = Pair(35, 15)
         val BIBLIOTECA_TO_MAIN = Pair(2, 20)
-        
+
         // Transiciones ESIME - Zacatenco
         val ESIME_TO_ZACATENCO_POSITION = Pair(5, 35)
         val ZACATENCO_TO_ESIME_POSITION = Pair(28, 24)
@@ -330,11 +333,13 @@ class MapMatrixProvider {
                 MAP_PLAZA_VISTA_NORTE -> createPlazaVistaNorteMatrix()
                 MAP_LAB_POSGRADO -> createLabPosgradoMatrix()
                 MAP_CIDETEC -> createCidetecMatrix()
+                MAP_LABRV -> createLabRVMatrix()
+
+                // Mapeo a las matrices de ESIA
                 MAP_BIBLIOTECA_ESIA -> createBibliotecaESIAMatrix()
                 MAP_EDIFICIO_ESIA -> createEdificioESIAMatrix()
-                MAP_SALON_ESIA -> getSalonESIAMatrix()
+                MAP_SALON_ESIA -> createSalonESIAMatrix()
 
-                MAP_LABRV -> createLabRVMatrix()
                 else -> createDefaultMatrix() // Por defecto, un mapa básico
             }
         }
@@ -1385,7 +1390,7 @@ class MapMatrixProvider {
          * |                                                                         |
          * +-------------------------------------------------------------------------+
          */
-         private fun createSalon2009Matrix(): Array<Array<Int>> {
+        private fun createSalon2009Matrix(): Array<Array<Int>> {
             val matrix = Array(MAP_HEIGHT) { Array(MAP_WIDTH) { WALL } }
 
             // Dimensiones del aula
@@ -2484,7 +2489,7 @@ class MapMatrixProvider {
         }
 
         private fun createEsimeMatrix(): Array<Array<Int>> {
-            val matrix = Array(MAP_HEIGHT) { Array(MAP_WIDTH) { PATH } }            
+            val matrix = Array(MAP_HEIGHT) { Array(MAP_WIDTH) { PATH } }
 
             // ========== BORDES EXTERIORES ==========
             for (i in 0 until MAP_HEIGHT) {
@@ -2498,7 +2503,7 @@ class MapMatrixProvider {
 
             // ========== EDIFICIOS BLOQUEADOS - SINCRONIZADO CON Esime.kt ==========
             // Basado exactamente en las definiciones de collisionAreas en Esime.kt
-            
+
             // Edificio 1 - Rectángulos bloqueados
             // Rect(7, 28, 14, 29) - Rectángulo grande desde entrada del Edificio 1
             for (i in 7..14) {
@@ -3341,213 +3346,111 @@ class MapMatrixProvider {
 
             return matrix
         }
+
+        // ==============================================================
+        // === MATRICES CORREGIDAS PARA ESIA ===
+        // ==============================================================
+
         private fun createBibliotecaESIAMatrix(): Array<Array<Int>> {
             // Crear matriz de 40x40 con TODO como PATH (valor 2)
             val matrix = Array(40) { Array(40) { 2 } }
 
             // ✅ NO BLOQUEAR NADA - Solo bordes mínimos
-            // Borde superior
-            for (j in 0..39) {
-                matrix[0][j] = 1  // WALL
-            }
-            // Borde inferior
-            for (j in 0..39) {
-                matrix[39][j] = WALL // WALL
-            }
-            // Borde izquierdo
-            for (i in 1..38) {
-                matrix[i][0] = 1  // WALL
-            }
-            // Borde derecho
-            for (i in 1..38) {
-                matrix[i][39] = WALL  // WALL
-            }
+            for (j in 0..39) { matrix[0][j] = 1 }
+            for (j in 0..39) { matrix[39][j] = 1 }
+            for (i in 1..38) { matrix[i][0] = 1 }
+            for (i in 1..38) { matrix[i][39] = 1 }
 
-            for (i in 3..5) {
-                for (j in 3 until 11) {
-                    matrix[i][j] = WALL
-                }
-            }
+            for (i in 3..5) { for (j in 3 until 11) { matrix[i][j] = WALL } }
+            for (i in 9..11) { for (j in 3 until 11) { matrix[i][j] = WALL } }
+            for (i in 17.. 19) { for (j in 3 until 11) { matrix[i][j] = WALL } }
+            for (i in 25 .. 26) { for (j in 3 until 11) { matrix[i][j] = WALL } }
+            for (i in 32.. 34) { for (j in 3 until 11) { matrix[i][j] = WALL } }
+            for (i in 27..34) { for (j in 18 ..19) { matrix[i][j] = WALL } }
+            for (i in 15.. 22) { for (j in 16 until 21) { matrix[i][j] = WALL } }
+            for (i in 4..11) { for (j in 17 ..19) { matrix[i][j] = WALL } }
+            for (i in 3..5) { for (j in 27 ..34) { matrix[i][j] = WALL } }
+            for (i in 32..34) { for (j in 26 ..33) { matrix[i][j] = WALL } }
 
-            for (i in 9..11) {
-                for (j in 3 until 11) {
-                    matrix[i][j] = WALL
-                }
-            }
-
-            // Bloquear área adicional (21,15) a (27,15)
-            for (i in 17.. 19) {
-                for (j in 3 until 11) {
-                    matrix[i][j] = WALL
-                }
-            }
-
-            // Bloquear área adicional (22,16) a (27,16)
-            for (i in 25 .. 26) {
-                for (j in 3 until 11) {
-                    matrix[i][j] = WALL
-                }
-            }
-
-            // Bloquear área adicional (23,17) a (27,17)
-            for (i in 32.. 34) {
-                for (j in 3 until 11) {
-                    matrix[i][j] = WALL
-                }
-            }
-
-            for (i in 27..34) {
-                for (j in 18 ..19) {
-                    matrix[i][j] = WALL
-                }
-            }
-
-            // NUEVO: Bloquear área (17,9) a (20,9)
-            for (i in 15.. 22) {
-                for (j in 16 until 21) {
-                    matrix[i][j] = WALL
-                }
-            }
-
-            for (i in 4..11) {
-                for (j in 17 ..19) {
-                    matrix[i][j] = WALL
-                }
-            }
-            for (i in 3..5) {
-                for (j in 27 ..34) {
-                    matrix[i][j] = WALL
-                }
-            }
-            for (i in 32..34) {
-                for (j in 26 ..33) {
-                    matrix[i][j] = WALL
-                }
-            }
-            for (j in 26..27){
-                matrix[28][j] = WALL
-            }
-            for (j in 33..34){
-                matrix[28][j] = WALL
-            }
-            for (j in 25..26){
-                matrix[24][j] = WALL
-            }
-            for (j in 32..33){
-                matrix[24][j] = WALL
-            }
-
-            for (j in 33..34){
-                matrix[13][j] = WALL
-            }
-            for (j in 26..27){
-                matrix[13][j] = WALL
-            }
-            for (j in 26..27){
-                matrix[9][j] = WALL
-            }
-            for (j in 33..34){
-                matrix[9][j] = WALL
-            }
+            for (j in 26..27){ matrix[28][j] = WALL }
+            for (j in 33..34){ matrix[28][j] = WALL }
+            for (j in 25..26){ matrix[24][j] = WALL }
+            for (j in 32..33){ matrix[24][j] = WALL }
+            for (j in 33..34){ matrix[13][j] = WALL }
+            for (j in 26..27){ matrix[13][j] = WALL }
+            for (j in 26..27){ matrix[9][j] = WALL }
+            for (j in 33..34){ matrix[9][j] = WALL }
 
             // Punto de entrada/salida
             matrix[19][38] = 0  // INTERACTIVE
 
-            // ✅ LOGS para verificar
-            Log.d("BibliotecaMatrix", "Posición [5][9] = ${matrix[5][9]} (debería ser 2)")
-            Log.d("BibliotecaMatrix", "Posición [8][9] = ${matrix[8][9]} (debería ser 2)")
-            Log.d("BibliotecaMatrix", "Posición [15][15] = ${matrix[15][15]} (debería ser 2)")
-
             return matrix
         }
+
         private fun createEdificioESIAMatrix(): Array<Array<Int>> {
-            // Usa las constantes ya definidas en tu proyecto (PATH, INTERACTIVE, MAP_HEIGHT, MAP_WIDTH)
             val matrix = Array(MAP_HEIGHT) { Array(MAP_WIDTH) { PATH } }
 
+            // 0. Borde de seguridad invisible en las orillas de la pantalla
             for (i in 0..39) {
-                for (j in 1 until 7) {
-                    matrix[j][i] = WALL
+                matrix[0][i] = WALL
+                matrix[39][i] = WALL
+                matrix[i][0] = WALL
+                matrix[i][39] = WALL
+            }
+
+            // 1. Pared superior de los salones (Y = 15)
+            // 2. Pared inferior del pasillo (Y = 36 para que tu posición inicial 20,34 quede libre)
+            for (x in 1..38) {
+                matrix[15][x] = WALL
+                matrix[36][x] = WALL
+            }
+
+            // 3. Paredes laterales de todo el bloque del edificio (X = 1 y X = 38)
+            for (y in 15..36) {
+                matrix[y][1] = WALL
+                matrix[y][38] = WALL
+            }
+
+            // 4. Pared horizontal que separa el pasillo de los salones (Y = 28)
+            for (x in 1..38) {
+                matrix[28][x] = WALL
+            }
+
+            // 5. Paredes verticales que separan los 8 salones (de Y = 15 a Y = 28)
+            // Se colocan en medio de las puertas para formar los cuartos
+            val paredesX = intArrayOf(6, 11, 16, 21, 26, 31, 35)
+            for (paredX in paredesX) {
+                for (y in 15..28) {
+                    matrix[y][paredX] = WALL
                 }
             }
 
-            for (i in 38.. 39) {
-                for (j in 7 until 27) {
-                    matrix[j][i] = WALL
-                }
+            // 6. ABRIR LAS PUERTAS HACIA LOS SALONES (INTERACTIVE = 0)
+            // Usamos las coordenadas exactas que pusiste en EdificioESIA.kt
+            val puertasX = intArrayOf(4, 9, 14, 18, 23, 28, 33, 37)
+            for (puerta in puertasX) {
+                matrix[28][puerta] = INTERACTIVE
             }
 
-            for (j in 7 until 27) {
-                matrix[j][0] = WALL
-            }
-
-
-            // Entrada del edificio en (19,28) -> matrix[y][x]
-            matrix[34][20] = INTERACTIVE
-            matrix[28][4] = INTERACTIVE
-            matrix[28][9] = INTERACTIVE
-            matrix[28][14] = INTERACTIVE
-            matrix[28][18] = INTERACTIVE
-            matrix[28][23] = INTERACTIVE
-            matrix[28][28] = INTERACTIVE
-            matrix[28][33] = INTERACTIVE
-            matrix[28][37] = INTERACTIVE
-
-            // DEBUG logs para confirmar que la función se ejecuta y el tile está correcto
-            Log.d("MapMatrixProvider", "createEdificioESIAMatrix: MAP_HEIGHT=$MAP_HEIGHT MAP_WIDTH=$MAP_WIDTH")
-            Log.d("MapMatrixProvider", "createEdificioESIAMatrix: matrix[28][19]=${matrix[28][19]} (INTERACTIVE=$INTERACTIVE, PATH=$PATH)")
+            // 7. ABRIR LA SALIDA PRINCIPAL DEL EDIFICIO
+            // Tu jugador aparece en (20, 34), abrimos el muro de abajo para que pueda salir a ESIA
+            matrix[36][20] = INTERACTIVE
 
             return matrix
         }
-        // En MapMatrixProvider.kt, agregar este método:
 
-        private fun getSalonESIAMatrix(): Array<Array<Int>> {
-            val matrix = Array(MAP_HEIGHT) { Array(MAP_WIDTH) { WALL } }
+        private fun createSalonESIAMatrix(): Array<Array<Int>> {
+            val matrix = Array(MAP_HEIGHT) { Array(MAP_WIDTH) { PATH } }
 
-            // Dimensiones del aula
-            val roomWidth = 40
-            val roomHeight = 40
-            val startX = 0
-            val startY = 0
-
-            // Interior del salón (espacio abierto)
-            for (i in startY until startY + roomHeight) {
-                for (j in startX until startX + roomWidth) {
-                    matrix[i][j] = PATH
-                }
+            // Paredes alrededor de todo el salón
+            for (i in 0..39) {
+                matrix[0][i] = WALL
+                matrix[39][i] = WALL
+                matrix[i][0] = WALL
+                matrix[i][39] = WALL
             }
-
-            // Puerta de salida hacia el edificio ESIA (lado izquierdo)
-            matrix[startY + roomHeight/2][1] = INTERACTIVE
-
-            // Pizarrón (pared frontal)
-            for (j in startX + 2 until startX + roomWidth - 2) {
-                matrix[startY + 1][j] = INACCESSIBLE
-            }
-            // Centro del pizarrón es interactivo
-            matrix[startY + 1][startX + roomWidth/2] = INTERACTIVE
-
-            // Escritorio del profesor
-            for (j in startX + 10 until startX + 20) {
-                for (i in startY + 3 until startY + 6) {
-                    matrix[i][j] = INACCESSIBLE
-                }
-            }
-
-            for (i in 4..32 step 4) {
-                matrix[15][i] = INACCESSIBLE
-            }
-            for (i in 4..32 step 4) {
-                matrix[20][i] = INACCESSIBLE
-            }
-            for (i in 4..32 step 4) {
-                matrix[25][i] = INACCESSIBLE
-            }
-            for (i in 4..32 step 4) {
-                matrix[29][i] = INACCESSIBLE
-            }
-            for (i in 4..32 step 4) {
-                matrix[34][i] = INACCESSIBLE
-            }
+            // Dejar la puerta abierta según SalonESIA.kt (X=0, Y=8)
+            matrix[8][0] = INTERACTIVE
 
             return matrix
         }
@@ -3930,6 +3833,16 @@ class MapMatrixProvider {
                 return MAP_ESIA
             }
 
+            // Transición DESDE Edificio ESIA hacia ESIA
+            if (mapId == MAP_EDIFICIO_ESIA && x == 20 && y == 36) {
+                return MAP_ESIA
+            }
+
+            // Transición DESDE Salon ESIA hacia Edificio ESIA
+            if (mapId == MAP_SALON_ESIA && x == 0 && y == 8) {
+                return MAP_EDIFICIO_ESIA
+            }
+
             return null
         }
 
@@ -4001,7 +3914,12 @@ class MapMatrixProvider {
                 MAP_PLAZA_TORRES -> Pair(18, 18) //Entrada ESCOM
                 MAP_PLAZA_TORRES_N1 -> Pair(20, 16) //Entrada cinepolis plaza torres
                 MAP_ESIA -> Pair(25, 35) // Posición inicial en ESIA (cerca de la entrada)
-                MAP_BIBLIOTECA_ESIA -> Pair(15, 25)
+
+                // === NUEVAS POSICIONES INICIALES ESIA ===
+                MAP_BIBLIOTECA_ESIA -> Pair(38, 19)
+                MAP_EDIFICIO_ESIA -> Pair(20, 34)
+                MAP_SALON_ESIA -> Pair(20, 20)
+
                 MAP_CIDETEC -> Pair(3,18) // Posición inicial en CIDETEC
                 MAP_LABRV -> Pair(7,30) // Posición inicial en LABRV
                 else -> Pair(MAP_WIDTH / 2, MAP_HEIGHT / 2)

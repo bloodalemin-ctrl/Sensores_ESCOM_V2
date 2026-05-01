@@ -150,8 +150,22 @@
             android:name=".presentation.locations.outdoor.RedMetro"
             android:theme="@style/Theme.Sensores_ESCOM_V2" />
 
+        <!-- Actividad principal de ESIA (Exteriores) -->
         <activity
             android:name=".presentation.locations.outdoor.ESIA"
+            android:configChanges="orientation|screenSize|keyboardHidden"/>
+
+        <!-- NUEVAS ACTIVIDADES DE ESIA (Edificios e Interiores) -->
+        <activity
+            android:name=".presentation.locations.buildings.esia.BibliotecaESIA"
+            android:configChanges="orientation|screenSize|keyboardHidden"/>
+
+        <activity
+            android:name=".presentation.locations.buildings.esia.EdificioESIA"
+            android:configChanges="orientation|screenSize|keyboardHidden"/>
+
+        <activity
+            android:name=".presentation.locations.buildings.esia.SalonESIA"
             android:configChanges="orientation|screenSize|keyboardHidden"/>
 
         <activity
