@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
-import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -30,8 +29,8 @@ class EdificioNuevoESIA : AppCompatActivity(), MapView.MapTransitionListener {
         playerName = intent.getStringExtra("PLAYER_NAME") ?: "Invitado"
         isServer = intent.getBooleanExtra("IS_SERVER", false)
 
-        // 1. Cargamos la imagen de tu nuevo plano (asegúrate de tenerla en res/drawable como edificio_nuevo_esia.png)
-        mapView = MapView(this, R.drawable.edificio_nuevo_esia)
+        // ✅ CORRECCIÓN 1: Especificar explícitamente "mapResourceId =" para evitar el error de AttributeSet
+        mapView = MapView(context = this, mapResourceId = R.drawable.edificio_nuevo_esia)
         findViewById<FrameLayout>(R.id.map_container).addView(mapView)
 
         // 2. Inicializamos interfaz y movimiento
@@ -67,12 +66,22 @@ class EdificioNuevoESIA : AppCompatActivity(), MapView.MapTransitionListener {
 
         // Botón A para interactuar/salir
         uiManager.buttonA.setOnClickListener {
+            // ✅ CORRECCIÓN 2 y 3: Validar que la posición no sea nula antes de leer currentPos.first
             val currentPos = mapView.playerManager.getLocalPlayerPosition()
-            val transition = MapMatrixProvider.isMapTransitionPoint(MapMatrixProvider.MAP_EDIFICIO_NUEVO_ESIA, currentPos.first, currentPos.second)
-            if (transition != null) {
-                onMapTransitionRequested(transition, currentPos)
+
+            if (currentPos != null) {
+                val transition = MapMatrixProvider.isMapTransitionPoint(
+                    MapMatrixProvider.MAP_EDIFICIO_NUEVO_ESIA,
+                    currentPos.first,
+                    currentPos.second
+                )
+                if (transition != null) {
+                    onMapTransitionRequested(transition, currentPos)
+                } else {
+                    Toast.makeText(this, "Acércate a una puerta para salir", Toast.LENGTH_SHORT).show()
+                }
             } else {
-                Toast.makeText(this, "Acércate a una puerta para salir", Toast.LENGTH_SHORT).show()
+                Log.e("EdificioNuevo", "No se pudo obtener la posición del jugador")
             }
         }
     }
